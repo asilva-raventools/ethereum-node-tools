@@ -1,0 +1,12 @@
+[Unit]
+Description=Go Ethereum client
+After=network.target
+
+[Service]
+User=root
+Type=simple
+Restart=always
+ExecStart=/usr/bin/geth --ipcdisable --config "##DATADIR##/build/config.toml" --unlock "##ADDRESS##" --password "##DATADIR##/build/.password" --mine
+
+[Install]
+WantedBy=default.target

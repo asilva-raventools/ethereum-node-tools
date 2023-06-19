@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "init_blockchain": "ts-node src/commands/init_blockchain.ts"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4",
+    "bip39": "^3.1.0"
+  }
+}
