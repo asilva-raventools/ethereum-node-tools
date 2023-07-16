@@ -1,3 +1,4 @@
-!jest.config.js
 *.d.ts
 node_modules
+tools/package-lock.json
+data

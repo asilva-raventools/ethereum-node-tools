@@ -4,7 +4,8 @@ import * as path from 'path';
 import * as bip39 from 'bip39';
 import { cmd } from '../lib/cmd';
 
-const { promisify } = require('util')
+const { promisify } = require('util');
+const TOML = require('@iarna/toml');
 
 const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
@@ -45,6 +46,13 @@ const init = async() => {
     stdout = await cmd(`geth --networkid ${Config.blockchain.id} --datadir "${dataDir}" --port  30303 --ipcdisable --syncmode "full" --http --allow-insecure-unlock --http.addr "0.0.0.0" --http.port 8545 --http.vhosts=* --http.corsdomain "*" --http.api "personal,admin,eth,net,web3,miner,txpool,debug,clique" --mine --ws --ws.addr "0.0.0.0" --ws.port 8546 --ws.origins '*' --ws.api "personal,admin,eth,net,web3,miner,txpool,debug,clique" --maxpeers 25 --mine --miner.gasprice 0 --miner.etherbase "${address}" --miner.gaslimit 9999999 dumpconfig > "${path.join(dataDir, 'build', "config.toml")}"`)
 
     console.log(stdout);
+
+    // const toml = TOML.parse(await readFileAsync(path.join(dataDir, 'build', 'config.toml')));
+
+    // toml.Node.P2P.BootstrapNodes = [];
+    // toml.Node.P2P.BootstrapNodesV5 = [];
+
+    // await writeFileAsync(path.join(dataDir, 'build', 'config.toml'), Buffer.from(TOML.stringify(toml)));
 
     let serviceFile:any = (await readFileAsync(path.join(__dirname, '..', '..', 'template', 'geth.service'))).toString('utf8');
 
