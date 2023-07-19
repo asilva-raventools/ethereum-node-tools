@@ -3,9 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as bip39 from 'bip39';
 import { cmd } from '../lib/cmd';
+import * as TOML from '../lib/toml';
 
 const { promisify } = require('util');
-const TOML = require('@iarna/toml');
 
 const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
@@ -13,10 +13,10 @@ const writeFileAsync = promisify(fs.writeFile);
 const init = async() => {
 
   const dataDir = path.join(Config.blockchain.data_path);
-  
-  if (!fs.existsSync(dataDir)) {
 
-    fs.mkdirSync(dataDir);
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir);
+  
+  if (!fs.existsSync(path.join(dataDir, 'build'))) {
   
     const mnemonic = bip39.generateMnemonic();
 
@@ -47,12 +47,13 @@ const init = async() => {
 
     console.log(stdout);
 
-    // const toml = TOML.parse(await readFileAsync(path.join(dataDir, 'build', 'config.toml')));
+    let toml = (await readFileAsync(path.join(dataDir, 'build', 'config.toml'))).toString('utf8');
 
-    // toml.Node.P2P.BootstrapNodes = [];
-    // toml.Node.P2P.BootstrapNodesV5 = [];
+    toml = TOML.replaceStartLine(toml, 'BootstrapNodes =', 'BootstrapNodes = []');
 
-    // await writeFileAsync(path.join(dataDir, 'build', 'config.toml'), Buffer.from(TOML.stringify(toml)));
+    toml = TOML.replaceStartLine(toml, 'BootstrapNodesV5 =', 'BootstrapNodesV5 = []');
+
+    await writeFileAsync(path.join(dataDir, 'build', 'config.toml'), Buffer.from(toml));
 
     let serviceFile:any = (await readFileAsync(path.join(__dirname, '..', '..', 'template', 'geth.service'))).toString('utf8');
 

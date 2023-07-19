@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  chain:
+    container_name: geth
+    build:
+      context: .
+    restart: unless-stopped
+    environment:
+      - BLOCKCHAIN_ID=43210
+    ports:
+      - '8545:8545'
+      - '8546:8546'
+    volumes:
+      - ./data:/opt/ethereum/data
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    healthcheck:
+      test: [ "CMD-SHELL", "geth attach --exec eth.blockNumber" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
